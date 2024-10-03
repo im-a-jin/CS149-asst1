@@ -1,0 +1,3 @@
+mandelbrot_ispc
+*.ppm
+objs/
