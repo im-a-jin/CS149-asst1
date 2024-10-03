@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include <thread>
 
 #include "CycleTimer.h"
@@ -22,6 +23,7 @@ extern void mandelbrotSerial(
     int maxIterations,
     int output[]);
 
+const int rowsPer = 3;
 
 //
 // workerThreadStart --
@@ -35,7 +37,36 @@ void workerThreadStart(WorkerArgs * const args) {
     // program that uses two threads, thread 0 could compute the top
     // half of the image and thread 1 could compute the bottom half.
 
-    printf("Hello world from thread %d\n", args->threadId);
+    // printf("Hello world from thread %d\n", args->threadId);
+
+    /*
+    CycleTimer::SysClock starttime = CycleTimer::currentTicks();
+
+    int totalRows = args->height / args->numThreads;
+    int startRow = args->height - totalRows * (args->threadId + 1);
+
+    mandelbrotSerial(
+        args->x0, args->y0, args->x1, args->y1,
+        args->width, args->height,
+        startRow, totalRows,
+        args->maxIterations,
+        args->output);
+
+    CycleTimer::SysClock endtime = CycleTimer::currentTicks();
+
+    printf("Thread %d takes %.2fms\n", args->threadId, (endtime - starttime) * CycleTimer::msPerTick());
+    */
+
+    for (unsigned int startRow = args->threadId*rowsPer; 
+         startRow < args->height; 
+         startRow += args->numThreads*rowsPer) {
+        mandelbrotSerial(
+            args->x0, args->y0, args->x1, args->y1,
+            args->width, args->height,
+            startRow, rowsPer,
+            args->maxIterations,
+            args->output);
+    }
 }
 
 //
