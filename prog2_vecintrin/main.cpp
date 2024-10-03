@@ -249,7 +249,31 @@ void clampedExpVector(float* values, int* exponents, float* output, int N) {
   // Your solution should work for any value of
   // N and VECTOR_WIDTH, not just when VECTOR_WIDTH divides N
   //
-  
+  __cs149_vec_float x, result;
+  __cs149_vec_int y;
+  __cs149_vec_int zero = _cs149_vset_int(0), one = _cs149_vset_int(1);
+  __cs149_vec_float nines = _cs149_vset_float(9.999999);
+  __cs149_mask maskLoad, maskIsPositive, maskClamp;
+
+  for (int i=0; i<N; i+=VECTOR_WIDTH) {
+    maskLoad = i+VECTOR_WIDTH < N ? _cs149_init_ones() : _cs149_init_ones(N-i);
+    _cs149_vload_float(x, values+i, maskLoad);
+    _cs149_vload_int(y, exponents+i, maskLoad);
+
+    _cs149_vgt_int(maskIsPositive, y, zero, maskLoad);
+
+    result = _cs149_vset_float(1.);
+    while (_cs149_cntbits(maskIsPositive) > 0) {
+      _cs149_vmult_float(result, result, x, maskIsPositive);
+      _cs149_vsub_int(y, y, one, maskIsPositive);
+      _cs149_vgt_int(maskIsPositive, y, zero, maskLoad);
+    }
+    
+    _cs149_vgt_float(maskClamp, result, nines, maskLoad);
+    _cs149_vmove_float(result, nines, maskClamp);
+
+    _cs149_vstore_float(output+i, result, maskLoad);
+  }
 }
 
 // returns the sum of all elements in values
@@ -270,11 +294,19 @@ float arraySumVector(float* values, int N) {
   //
   // CS149 STUDENTS TODO: Implement your vectorized version of arraySumSerial here
   //
+  __cs149_vec_float x = _cs149_vset_float(0.), y;
+  __cs149_mask maskLoad = _cs149_init_ones();
   
   for (int i=0; i<N; i+=VECTOR_WIDTH) {
-
+    _cs149_vload_float(y, values+i, maskLoad);
+    _cs149_vadd_float(x, x, y, maskLoad);
   }
 
-  return 0.0;
+  for (int j=VECTOR_WIDTH; j>1; j>>=1) {
+    _cs149_hadd_float(x, x);
+    _cs149_interleave_float(x, x);
+  }
+ 
+  return x.value[0];
 }
 
