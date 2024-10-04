@@ -35,6 +35,10 @@ int main() {
         
         // starter code populates array with random input values
         values[i] = .001f + 2.998f * static_cast<float>(rand()) / RAND_MAX;
+        // values[i] = 0.;  // (7.45x speedup from ISPC)
+        //                  // (53.09x speedup from task ISPC)
+        // values[i] = 1.;  // (2.02x speedup from ISPC)
+        //                  // (2.23x speedup from task ISPC)
     }
 
     // generate a gold version to check results
