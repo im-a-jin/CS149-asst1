@@ -23,8 +23,6 @@ extern void mandelbrotSerial(
     int maxIterations,
     int output[]);
 
-const int rowsPer = 3;
-
 //
 // workerThreadStart --
 //
@@ -56,6 +54,8 @@ void workerThreadStart(WorkerArgs * const args) {
 
     printf("Thread %d takes %.2fms\n", args->threadId, (endtime - starttime) * CycleTimer::msPerTick());
     */
+
+    static constexpr int rowsPer = 3;
 
     for (unsigned int startRow = args->threadId*rowsPer; 
          startRow < args->height; 
