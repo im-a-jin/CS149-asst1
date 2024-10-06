@@ -38,10 +38,12 @@ void workerThreadStart(WorkerArgs * const args) {
     // printf("Hello world from thread %d\n", args->threadId);
 
     /*
-    CycleTimer::SysClock starttime = CycleTimer::currentTicks();
+    // CycleTimer::SysClock starttime = CycleTimer::currentTicks();
 
     int totalRows = args->height / args->numThreads;
-    int startRow = args->height - totalRows * (args->threadId + 1);
+    int startRow = totalRows * args->threadId;
+    if (args->threadId == args->numThreads - 1)
+      totalRows += args->height % args->numThreads;
 
     mandelbrotSerial(
         args->x0, args->y0, args->x1, args->y1,
@@ -50,9 +52,9 @@ void workerThreadStart(WorkerArgs * const args) {
         args->maxIterations,
         args->output);
 
-    CycleTimer::SysClock endtime = CycleTimer::currentTicks();
+    // CycleTimer::SysClock endtime = CycleTimer::currentTicks();
 
-    printf("Thread %d takes %.2fms\n", args->threadId, (endtime - starttime) * CycleTimer::msPerTick());
+    // printf("Thread %d takes %.2fms\n", args->threadId, (endtime - starttime) * CycleTimer::msPerTick());
     */
 
     static constexpr int rowsPer = 3;
